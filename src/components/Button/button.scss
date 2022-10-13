@@ -1,0 +1,22 @@
+@import "../../scss/variables";
+
+.btn {
+  font-family: Brutal, sans-serif;
+  background-color: transparent;
+  font-size: 14px;
+  align-content: center;
+  height: 100%;
+  width: 100%;
+  font-weight: 600;
+  border-radius: 4px 20px 20px 4px;
+  border-color: black;
+  text-transform: uppercase;
+  color: black;
+  box-shadow: inset 0 0 0 0 black;
+  transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: inset 300px 0 0 0 black;
+    color: $main-color;
+  }
+}

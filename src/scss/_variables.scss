@@ -1,0 +1,41 @@
+$header-height: 94px;
+$padding: 77px;
+$mobile-width: 600px;
+$tablet-width: 1024px;
+
+$main-color: #58edff;
+$white-color: #fff;
+$black-color: #000;
+
+$text-color: #f1f1f1;
+$background-color: rgb(28, 28, 28);
+$blue-color: #7b39fd;
+$primary-color: yellow;
+$purple-color: #701498;
+$header-color: rgba(
+  $color: #1a1a1a,
+  $alpha: 0.2,
+);
+$header-background: #1a1a1a;
+
+@keyframes lighter {
+  0% {
+    text-shadow: 0 0 10px rgba($color: $primary-color, $alpha: 0.5);
+  }
+  25% {
+    text-shadow: 0 0 10px rgba($color: $primary-color, $alpha: 0.5),
+      0 0 20px rgba($color: $primary-color, $alpha: 0.5);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba($color: $primary-color, $alpha: 0.5),
+      0 0 20px rgba($color: $primary-color, $alpha: 0.5),
+      0 0 40px rgba($color: $primary-color, $alpha: 0.3);
+  }
+  25% {
+    text-shadow: 0 0 10px rgba($color: $primary-color, $alpha: 0.5),
+      0 0 20px rgba($color: $primary-color, $alpha: 0.5);
+  }
+  100% {
+    text-shadow: 0 0 10px rgba($color: $primary-color, $alpha: 0.5);
+  }
+}
