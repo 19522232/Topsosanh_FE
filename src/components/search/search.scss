@@ -19,9 +19,13 @@
     font-size: 1rem;
     background-color: #000;
     border-radius: 20px 3px 3px 20px;
-    color: rgba($color: $white-color, $alpha: 0.7);
+    color: #f1f1f1;
     //border-color: rgb(255, 199, 96);
     //background-color: yellow;
+  }
+
+  ::placeholder {
+    color: #f1f1f1;
   }
 
   .btn {

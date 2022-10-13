@@ -1,7 +1,7 @@
 import React from "react";
 import Search from "../../components/search/Search";
-import text from "../../assets/img/TopSoSanh_text.png";
-import logo from "../../assets/img/TopSoSanh_logo_title_removebg.png";
+import text from "../../assets/img/TopSoSanh_text2.png";
+import logo from "../../assets/img/TopSoSanh_logo_title_removebg2.png";
 
 import "./home.scss";
 
