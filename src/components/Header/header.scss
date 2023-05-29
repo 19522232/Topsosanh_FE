@@ -1,0 +1,151 @@
+@import "../../scss/variables";
+
+.header__wrapper {
+  height: $header-height;
+  padding-left: $padding;
+  padding-right: $padding;
+  background-color: $header-background;
+}
+
+.header__container {
+  display: flex;
+  padding-top: 16px;
+  padding-bottom: 10px;
+}
+
+.header__logo {
+  flex: 4;
+
+  &__img {
+    width: 40px;
+    margin-right: 10px;
+  }
+
+  &__text {
+    width: 250px;
+  }
+}
+
+.header__avatar {
+  margin-right: 20px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.header__search-wrap {
+  flex: 6;
+  display: flex;
+  align-items: center;
+
+  &__search-bar {
+    // margin: 0;
+    // position: absolute;
+    // top: 50%;
+    // -ms-transform: translateY(-50%);
+    // transform: translateY(-50%);
+  }
+}
+
+.header__notification {
+  display: flex;
+  align-items: center;
+  svg {
+    font-size: 25px;
+    justify-content: center;
+    margin-right: 5px;
+    transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+    &:hover {
+      cursor: pointer;
+      color: $main-color;
+
+      animation: tilt-shaking 0.15s infinite;
+    }
+
+    // display: inline-block;
+    // vertical-align: middle;
+    // transform: perspective(1px) translateZ(0);
+    // box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+
+    // &:hover,
+    // &:focus,
+    // &:active {
+    //   color: $main-color;
+    //   -webkit-animation-name: buzz-out-on-hover;
+    //   animation-name: buzz-out-on-hover;
+    //   -webkit-animation-duration: 0.75s;
+    //   animation-duration: 0.75s;
+    //   -webkit-animation-timing-function: linear;
+    //   animation-timing-function: linear;
+    //   -webkit-animation-iteration-count: 1;
+    //   animation-iteration-count: 1;
+    // }
+  }
+}
+
+.modal-body {
+  height: 80vh;
+  overflow-y: auto;
+}
+
+@keyframes tilt-shaking {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  50% {
+    transform: rotate(0eg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes buzz-out-on-hover {
+  10% {
+    -webkit-transform: translateX(3px) rotate(2deg);
+    transform: translateX(3px) rotate(2deg);
+  }
+  20% {
+    -webkit-transform: translateX(-3px) rotate(-2deg);
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  30% {
+    -webkit-transform: translateX(3px) rotate(2deg);
+    transform: translateX(3px) rotate(2deg);
+  }
+  40% {
+    -webkit-transform: translateX(-3px) rotate(-2deg);
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  50% {
+    -webkit-transform: translateX(2px) rotate(1deg);
+    transform: translateX(2px) rotate(1deg);
+  }
+  60% {
+    -webkit-transform: translateX(-2px) rotate(-1deg);
+    transform: translateX(-2px) rotate(-1deg);
+  }
+  70% {
+    -webkit-transform: translateX(2px) rotate(1deg);
+    transform: translateX(2px) rotate(1deg);
+  }
+  80% {
+    -webkit-transform: translateX(-2px) rotate(-1deg);
+    transform: translateX(-2px) rotate(-1deg);
+  }
+  90% {
+    -webkit-transform: translateX(1px) rotate(0);
+    transform: translateX(1px) rotate(0);
+  }
+  100% {
+    -webkit-transform: translateX(-1px) rotate(0);
+    transform: translateX(-1px) rotate(0);
+  }
+}

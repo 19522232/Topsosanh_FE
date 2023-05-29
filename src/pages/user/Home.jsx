@@ -1,5 +1,5 @@
 import React from "react";
-import Search from "../../components/search/Search";
+import Searchbar from "../../components/Search_bar/Search_bar";
 import text from "../../assets/img/TopSoSanh_text2.png";
 import logo from "../../assets/img/TopSoSanh_logo_title_removebg2.png";
 
@@ -13,7 +13,7 @@ function Home(props) {
         <img className="text" src={text} alt="text" />
       </div>
       <div className="search_bar">
-        <Search></Search>
+        <Searchbar></Searchbar>
       </div>
     </div>
   );

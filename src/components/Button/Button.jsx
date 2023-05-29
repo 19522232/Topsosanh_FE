@@ -7,7 +7,7 @@ function Button(props) {
       className={props.className}
       onClick={props.onClick ? () => props.onClick() : null}
     >
-      {props.children}
+      <a href={props.url}>{props.children}</a>
     </button>
   );
 }

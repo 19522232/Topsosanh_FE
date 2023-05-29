@@ -1,0 +1,64 @@
+@import "../../scss/variables";
+
+.Footer__wrapper {
+  padding-left: $padding;
+  padding-right: $padding;
+  margin-top: 88px;
+  height: 422px;
+  background-color: #080300;
+}
+
+.Footer__container {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  color: aliceblue;
+}
+
+.Footer__content {
+  margin-top: 50px;
+  display: flex;
+  width: 100%;
+  padding: 10px;
+  padding-bottom: 30px;
+  line-height: 1.5;
+  border-bottom: 1px solid #5f5b5b;
+
+  &-introduction {
+    flex: 5;
+    margin-right: 20px;
+    a {
+      font-size: 24px;
+    }
+  }
+
+  &-about {
+    flex: 5;
+    margin-right: 20px;
+  }
+
+  &-function {
+    flex: 3;
+    margin-right: 100px;
+  }
+
+  &-register {
+    flex: 4;
+  }
+}
+
+.Footer__website-name {
+  padding-top: 25px;
+  margin: 0 auto;
+}
+
+.logo {
+  &-img {
+    width: 40px;
+    margin-right: 10px;
+  }
+  &-text {
+    width: 250px;
+  }
+}

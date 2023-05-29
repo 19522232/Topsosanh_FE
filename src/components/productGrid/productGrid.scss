@@ -1,0 +1,16 @@
+.ProductGrid {
+  margin: 0 -8px;
+  padding: 0;
+  list-style: none;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+
+  li {
+    width: 220px;
+    padding: 0 8px;
+    height: 346px;
+    margin-bottom: 16px;
+  }
+}

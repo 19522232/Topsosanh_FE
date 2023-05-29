@@ -5,19 +5,46 @@
   background-color: transparent;
   font-size: 14px;
   align-content: center;
-  height: 100%;
-  width: 100%;
   font-weight: 600;
   border-radius: 4px 20px 20px 4px;
-  border-color: black;
+  border-color: $primary-color;
   text-transform: uppercase;
-  color: black;
-  box-shadow: inset 0 0 0 0 black;
+  color: $primary-color;
+  box-shadow: inset 0 0 0 0 $primary-color;
   transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 
   &:hover {
-    box-shadow: inset 300px 0 0 0 black;
+    box-shadow: inset 300px 0 0 0 $primary-color;
     color: $white-color;
     cursor: pointer;
+  }
+}
+
+.btn-buy {
+  font-family: Brutal, sans-serif;
+  background-color: transparent;
+  font-size: 18px;
+  align-content: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-color: red;
+  color: red;
+  box-shadow: inset 0 0 0 0 red;
+  transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: inset 300px 0 0 0 red;
+    color: $white-color;
+    cursor: pointer;
+
+    a {
+      color: $white-color;
+    }
+  }
+
+  a {
+    text-decoration: none;
+    color: red;
   }
 }

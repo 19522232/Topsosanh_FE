@@ -1,0 +1,37 @@
+@import "../../scss/variables";
+
+.Login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("https://www.icgroupinc.com/wp-content/uploads/2016/09/background-work.jpg");
+  &__container {
+    width: calc(2 / 3 * 100%);
+    border: none;
+    border-radius: 5px 0 0 5px;
+    display: flex;
+    background-color: white;
+
+    &-loginform {
+      padding: 40px;
+      width: 40%;
+
+      &-welcometxt {
+        margin-bottom: 24px;
+
+        h1 {
+          color: black;
+        }
+
+        span {
+          color: black;
+        }
+      }
+    }
+
+    &-welcomeswiper {
+      width: 60%;
+    }
+  }
+}

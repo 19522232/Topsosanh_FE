@@ -6,17 +6,18 @@ $tablet-width: 1024px;
 $main-color: #1b6ef6;
 $white-color: #fff;
 $black-color: #000;
+$orange-color: rgb(255, 199, 96);
 
-$text-color: #f1f1f1;
-$background-color: rgb(28, 28, 28);
-$blue-color: #7b39fd;
-$primary-color: yellow;
+$text-color: #242424;
+$background-color: #f2f3f8;
+
+$primary-color: #393e46;
 $purple-color: #701498;
 $header-color: rgba(
   $color: #1a1a1a,
   $alpha: 0.2,
 );
-$header-background: #1a1a1a;
+$header-background: #eeeeee;
 
 @keyframes lighter {
   0% {
