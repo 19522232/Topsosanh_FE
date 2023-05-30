@@ -1,23 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./signupform.scss";
-
-import { useLocation } from "react-router-dom";
+import { classValidatorResolver } from "@hookform/resolvers/class-validator";
 import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
 
-import {
-  LockOutlined,
-  UserOutlined,
-  MailOutlined,
-  SmileOutlined,
-  FrownOutlined,
-} from "@ant-design/icons";
-import { Button, Form, Input, notification } from "antd";
+import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
+import { notification } from "antd";
+import { useForm, Controller } from "react-hook-form";
+import { SignUpDTO } from "../../dtos/signup.dto";
+import { IconButton, TextField } from "@mui/material";
+
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 function SignUpForm() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-  //reset local storage
-  useEffect(() => {}, []);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const resolver = classValidatorResolver(SignUpDTO);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      username: "",
+    },
+    resolver,
+  });
+
+  const handleRequest = handleSubmit((value) => {
+    openSuccessNotification();
+    passUser(value);
+  });
 
   //register success
   const openSuccessNotification = () => {
@@ -53,88 +72,81 @@ function SignUpForm() {
   };
 
   //Enter submit button
-  const onFinish = (values) => {
-    openSuccessNotification();
-    passUser(values);
-    // createAccount(values)
-    //   .then(() => {
-    //     openSuccessNotification();
-    //     passUser(values);
-    //   })
-    //   .catch(() => openErrorNotification());
-  };
 
   return (
-    <div className="SignUpForm">
-      <Form
-        name="normal_signup"
-        className="signup-form"
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-      >
-        <Form.Item
+    <div>
+      <div style={{ marginBottom: "20px" }}>
+        <Controller
           name="email"
-          rules={[
-            {
-              required: true,
-              message: "Please input your Email!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<MailOutlined className="site-form-item-icon" />}
-            placeholder="Email"
-          />
-        </Form.Item>
-        <Form.Item
+          control={control}
+          render={({ field }) => (
+            <TextField
+              label={"Email"}
+              autoFocus
+              fullWidth
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              {...field}
+            />
+          )}
+        />
+      </div>
+      <div style={{ marginBottom: "20px" }}>
+        <Controller
           name="username"
-          rules={[
-            {
-              required: true,
-              message: "Please input your Username!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Username"
-          />
-        </Form.Item>
-        <Form.Item
+          control={control}
+          render={({ field }) => (
+            <TextField
+              label={"Username"}
+              fullWidth
+              error={!!errors.username}
+              helperText={errors.username?.message}
+              {...field}
+            />
+          )}
+        ></Controller>
+      </div>
+      <div style={{ marginBottom: "20px" }}>
+        <Controller
           name="password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your Password!",
-            },
-          ]}
-        >
-          <Input
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Password"
-          />
-        </Form.Item>
+          control={control}
+          render={({ field }) => (
+            <TextField
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              fullWidth
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                ),
+              }}
+              {...field}
+            />
+          )}
+        ></Controller>
+      </div>
 
-        <p className="font-face-qsm">
-          Already a member?{" "}
-          <a className="font-face-qsb" href="/login">
-            Login
-          </a>
-        </p>
-
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="signup-form-button font-face-qsb"
-          >
-            Sign Up
-          </Button>
-        </Form.Item>
-      </Form>
+      <p className="font-face-qsm">
+        Already a member?
+        <a className="font-face-qsb" href="/login">
+          Login
+        </a>
+      </p>
+      <Button
+        className="signup-form-button font-face-qsb"
+        onClick={handleRequest}
+        variant="contained"
+      >
+        Sign Up
+      </Button>
     </div>
   );
 }
