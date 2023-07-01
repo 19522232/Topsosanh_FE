@@ -2,9 +2,10 @@ import "./loginform.scss";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, notification } from "antd";
-
+import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { post } from "../../ultils/AxiosClient";
 
 function LoginForm() {
   const location = useLocation();
@@ -13,10 +14,11 @@ function LoginForm() {
   const navigate = useNavigate();
 
   const [form] = Form.useForm();
-  const openNotificationWithIcon = (res) => {
-    api["error"]({
-      message: "Thất bại",
-      description: res,
+  const openNotificationWithIcon = (title) => {
+    notification.open({
+      message: title,
+      duration: 10,
+      icon: <FrownOutlined style={{ color: "red" }} />,
     });
   };
 
@@ -30,6 +32,17 @@ function LoginForm() {
   }, []);
 
   const onFinish = async (values) => {
+    console.log(values);
+    const res = await post('Auth/Login', values)
+
+    console.log('--->', res);
+    if (res.status == 400) { 
+      openNotificationWithIcon(res.data.errors.toString())
+      return;
+    }
+    const token = res.data.token.access_token;
+    localStorage.setItem("token", token);
+    
     navigate("/");
     // try {
     //   const res = await loginAccount(values);
@@ -64,18 +77,18 @@ function LoginForm() {
         onFinish={onFinish}
       >
         <Form.Item
-          name="username"
+          name="email"
           rules={[
             {
               required: true,
-              message: "Please input your Username!",
+              message: "Please input your Email!",
             },
           ]}
         >
           <Input
             className="font-face-qsb"
             prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Username"
+            placeholder="Email"
           />
         </Form.Item>
         <Form.Item
@@ -104,6 +117,7 @@ function LoginForm() {
             type="primary"
             htmlType="submit"
             className="login-form-button font-face-qsb"
+            
           >
             Log in
           </Button>

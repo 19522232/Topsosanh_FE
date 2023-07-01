@@ -18,6 +18,8 @@ import {
   TutorialPage,
   TrackingPage,
 } from "./pages/lazyLoad";
+import FavoritePage from "./pages/FavoritePage";
+import AddressPage from "./pages/AddressPage";
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
         </Route>
         <Route path="/tutorial" element={<TutorialPage />} />
         <Route path="/tracking" element={<TrackingPage />} />
+        <Route path="/favorite" element={<FavoritePage />} />
+        <Route path="/address" element={<AddressPage />} />
       </Routes>
     </div>
   );

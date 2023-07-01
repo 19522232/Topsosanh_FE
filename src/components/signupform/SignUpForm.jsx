@@ -5,13 +5,14 @@ import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 
 import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
-import { notification } from "antd";
+import { Alert, notification } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { SignUpDTO } from "../../dtos/signup.dto";
 import { IconButton, TextField } from "@mui/material";
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { post } from "../../ultils/AxiosClient";
 
 function SignUpForm() {
   const navigate = useNavigate();
@@ -29,24 +30,36 @@ function SignUpForm() {
     defaultValues: {
       email: "",
       username: "",
+      
     },
     resolver,
   });
 
-  const handleRequest = handleSubmit((value) => {
-    openSuccessNotification();
-    passUser(value);
+  const handleRequest = handleSubmit(async(value) => {
+    //console.log(value);
+    const res = await post('Auth/Register', { firstname: value.username, lastname: '', email: value.email, password: value.password })
+    if (res.status == 200) {
+      openSuccessNotification();
+      
+      passUser(value);
+    }
+    else if (res.status == 400) {
+      openErrorNotification(res.data.errors.toString());
+    }
+    else {
+      openErrorNotification('Please try again!!!');
+    }
   });
 
   //register success
   const openSuccessNotification = () => {
     notification.open({
-      message: "Your register was successful!",
-      duration: 2,
+      message: "Please check your email to verify account.",
+      duration: 10,
       icon: (
         <SmileOutlined
           style={{
-            color: "green",
+            color: "orange",
           }}
         />
       ),
@@ -54,9 +67,9 @@ function SignUpForm() {
   };
 
   //register error
-  const openErrorNotification = () => {
+  const openErrorNotification = (title) => {
     notification.open({
-      message: "Your register was error!",
+      message: title,
       duration: 2,
       icon: <FrownOutlined style={{ color: "red" }} />,
     });
@@ -97,7 +110,7 @@ function SignUpForm() {
           control={control}
           render={({ field }) => (
             <TextField
-              label={"Username"}
+              label={"Your Name"}
               fullWidth
               error={!!errors.username}
               helperText={errors.username?.message}
