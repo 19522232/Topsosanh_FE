@@ -1,6 +1,6 @@
 import React, { Fragment, useRef } from "react";
 
-import { Spin, Empty, Pagination, Select, Table, Image, Button, Alert } from "antd";
+import { Spin, Empty, Pagination, Select, Table, Image, Button, Alert, notification, Modal } from "antd";
 import Header from "../../components/Header/Header";
 import ProductGrid from "../../components/productGrid/ProductGrid";
 import productService from "../../services/productService";
@@ -8,10 +8,11 @@ import Footer from "../../components/Footer/Footer";
 import { BsChevronRight } from "react-icons/bs";
 
 import "./style.index.scss";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { get, post } from "../../ultils/AxiosClient";
+import { SmileOutlined, FrownOutlined,DeleteOutlined } from "@ant-design/icons";
 
 // const ProductList = [
 //   {
@@ -196,29 +197,20 @@ const Shop = {
   Gearvn: 1,
   Ankhang: 2,
 };
-const handleRemoveProduct = (id) => {
-    console.log('','éc ô éc')
-}
-const dataSource = [
-    {
-      key: '1',
-        name: '1',
-      img:<Image src="https://nodejs.org/static/images/logo.svg"></Image>,
-      age: 32,
-        address: '10 Downing Street',
-        action: <Button onClick={() => { handleRemoveProduct(1) }}>Xóa mẹ m đi</Button>
-    },
-    {
-      key: '2',
-      name: 'John',
-      age: 42,
-      address: '10 Downing Street',
-    },
-  ];
+
+
+
   
-  const columns = [
+const columns = [
+  {
+    title: 'STT',
+    dataIndex: 'Key',
+        key: 'Key',
+        filterMode: 'tree',
+        filterSearch: true,
+  },
     {
-      title: 'STT',
+      title: 'Tên Sản Phẩm',
       dataIndex: 'name',
           key: 'name',
           filterMode: 'tree',
@@ -229,11 +221,6 @@ const dataSource = [
       dataIndex: 'img',
       key: 'img',
     },
-    {
-      title: 'Tên Sản Phẩm',
-      dataIndex: 'address',
-      key: 'address',
-      },
       {
         title: 'Thao Tác',
         dataIndex: 'action',
@@ -242,6 +229,71 @@ const dataSource = [
   ];
 
 function FavoritePage(props) {
+
+  const [data, setData] = useState([]);
+  const [redoadAPI, setRedoadAPI]=useState();
+  const handleRemoveProduct = async() => {
+    const res = await post('Account/RemoveFavorite', idRemove);
+    if (res.status == 200) {
+      openSuccessNotification();
+      setRedoadAPI(Math.random);
+    }
+    else if (res.status == 400) {
+      openErrorNotification(res.data.errors.toString());
+    }
+  }
+  const openSuccessNotification = () => {
+    notification.open({
+      message: "Delete Favorite Success",
+      duration: 10,
+      icon: (
+        <SmileOutlined
+          style={{
+            color: "green",
+          }}
+        />
+      ),
+    });
+  };
+  const openErrorNotification = (title) => {
+    notification.open({
+      message: title,
+      duration: 2,
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
+  };
+  const getData = async() => {
+    const res = await get('Account/GetFavoriteProductByToken', {PageNumber:99999999999999999999999999});
+    if (res.status == 200) {
+      const tmp = res.data.data.map((i, idx) => {
+        return {
+          Key: idx+1,
+          name: <a key={idx} href={i.productUrl} target="_blank" >{i.productName}</a>,
+        img:<div style={{width:'200px',height:'200px'}}><Image src={i.imageUrl}  ></Image></div>,
+          action: <Button onClick={() => { showModal(i.productUrl || 1) }} > Hủy yêu thích</Button>
+        }
+      })
+      setData(tmp);
+    }
+    
+  }
+  useEffect(() => {
+    getData();
+  }, [redoadAPI])
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [idRemove, setIdRemove] = useState('');;
+  const showModal = (id) => {
+    setIsModalOpen(true);
+    setIdRemove(id);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+    handleRemoveProduct();
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="search">
@@ -270,8 +322,12 @@ function FavoritePage(props) {
             </div>
            
           </div>
-
-<Table dataSource={dataSource} columns={columns}></Table>
+{/* <div style={{width:'1300px', border:'3px solid black'}}> */}
+          <Table dataSource={data} columns={columns} ></Table>
+          {/* </div> */}
+          <Modal title="Do you really want to delete??" style={{top:'45%'}} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        
+      </Modal>
           {/* KẾT THÚC PHẦN BẢNG */}
         </div>
         {/* KẾT THÚC BODY CONTAINER */}
