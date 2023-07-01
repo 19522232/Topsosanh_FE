@@ -1,4 +1,5 @@
 import React, { Fragment, useRef } from "react";
+import { SmileOutlined, FrownOutlined,DeleteOutlined } from "@ant-design/icons";
 
 import {
   Spin,
@@ -10,6 +11,8 @@ import {
   Input,
   Alert,
   InputNumber,
+  notification,
+  Modal,
 } from "antd";
 import Header from "../../components/Header/Header";
 import ProductGrid from "../../components/productGrid/ProductGrid";
@@ -24,7 +27,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import locations from "./locations.json";
-import { post } from "../../ultils/AxiosClient";
+import { _delete, get, post } from "../../ultils/AxiosClient";
 import { isDocument } from "@testing-library/user-event/dist/utils";
 
 // const ProductList = [
@@ -210,49 +213,17 @@ const Shop = {
   Gearvn: 1,
   Ankhang: 2,
 };
-const handleRemoveProduct = (id) => {
-  console.log("", "éc ô éc");
-};
-const dataSource = [
-  {
-    key: "1",
-    name: "1",
-    img: <Image src="https://nodejs.org/static/images/logo.svg"></Image>,
-    age: 32,
-    address: "10 Downing Street",
-    action: (
-      <Button
-        onClick={() => {
-          handleRemoveProduct(1);
-        }}
-      >
-        Xóa mẹ m đi
-      </Button>
-    ),
-  },
-  {
-    key: "2",
-    name: "John",
-    age: 42,
-    address: "10 Downing Street",
-  },
-];
 
 const columns = [
   {
     title: "STT",
-    dataIndex: "name",
-    key: "name",
+    dataIndex: "index",
+    key: "index",
     filterMode: "tree",
     filterSearch: true,
   },
   {
-    title: "Hình Ảnh",
-    dataIndex: "img",
-    key: "img",
-  },
-  {
-    title: "Tên Sản Phẩm",
+    title: "Địa chỉ",
     dataIndex: "address",
     key: "address",
   },
@@ -267,37 +238,83 @@ function AddressPage(props) {
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
-  const [value, setValue] = useState({
-    province: null,
-    District: null,
-    ward: null,
-    ard: null,
-  });
+  const [reloadAPI, setReloadAPI]=useState();
+  const [dataSource, setDataSource]=useState();
 
   const provinces = locations.provinces;
   const districts = locations.provinces[selectedProvince]?.districts || [];
   const wards =
     locations.provinces[selectedProvince]?.districts[selectedDistrict]?.wards ||
     [];
-  console.log(provinces, locations[selectedProvince], selectedProvince);
+  
+  const getData = async () => { 
+    const res = await get("location/getall", { PageNumber: 99999999999999999999999999 });
+    if (res.status === 200) { 
+      const data = res.data.data.map((item, index) => {
+        return {
+          index: index,
+          address: item.address + "," + item.commune + "," + item.district + "," + item.province,
+          action: <Button onClick={() => { showModal(item.id || 1) }} > Xóa</Button>
+        }
+      })
+      console.log("data ", data);
+      setDataSource(data)
+    }
+  }
+  
   useEffect(() => {
-    console.log(value);
-  }, [value]);
-  useEffect(() => {
-    setValue({
-      ...value,
-      province: locations.provinces[selectedProvince]?.name || "",
-    });
-  }, [selectedProvince]);
-  useEffect(() => {
-    if (selectedProvince)
-      setValue({
-        ...value,
-        District:
-          locations.provinces[selectedProvince]?.districts[selectedDistrict]
-            ?.name || "",
+    getData()
+  }, [reloadAPI])
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [idRemove, setIdRemove] = useState('');
+
+  const handleRemoveProduct = async () => {
+    const res = await _delete("location/delete/" + idRemove);
+    if (res.status == 400) {
+      res.data.errors.forEach(error => {
+        openErrorNotification(error.toString())
       });
-  }, [selectedDistrict]);
+    }
+    else if (res.status == 200) { 
+      openSuccessNotification();
+      setReloadAPI(Math.random)
+    }
+  };
+  
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "index",
+      key: "index",
+      filterMode: "tree",
+      filterSearch: true,
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",
+      key: "address",
+    },
+    {
+      title: "Thao Tác",
+      dataIndex: "action",
+      key: "action",
+    },
+  ];
+
+  const showModal = (id) => {
+    setIsModalOpen(true);
+    setIdRemove(id);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    handleRemoveProduct();
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const handleProvinceChange = (selectedOption) => {
     console.log("choice", selectedOption);
     setSelectedProvince(selectedOption.value);
@@ -316,8 +333,29 @@ function AddressPage(props) {
     setSelectedWard(selectedOption);
   };
 
+  const openSuccessNotification = () => {
+    notification.open({
+      message: "Thao tác thực hiện thành công",
+      duration: 10,
+      icon: (
+        <SmileOutlined
+          style={{
+            color: "green",
+          }}
+        />
+      ),
+    });
+  };
+  const openErrorNotification = (title) => {
+    notification.open({
+      message: title,
+      duration: 5,
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
+  };
+
   const handleSubmit = async () => {
-    const res = await post("location/create", {
+    const value={
       province: provinces[selectedProvince]?.name || "",
       district: districts[selectedDistrict]?.name || "",
       commune: selectedWard.label,
@@ -325,8 +363,18 @@ function AddressPage(props) {
       phoneNumber: document.getElementById("address_tel")?.value || "",
       email: document.getElementById("address_email")?.value || "",
       name: document.getElementById("address_name")?.value || "",
-    });
-    console.log(res);
+    }
+    
+    const res = await post("location/create", value);
+    if (res.status == 400) {
+      res.data.errors.forEach(error => {
+        openErrorNotification(error.toString())
+      });
+    }
+    else if (res.status == 200) { 
+      openSuccessNotification();
+    }
+
   };
 
   return (
@@ -379,7 +427,7 @@ function AddressPage(props) {
                   value: idx,
                   label: district.name,
                 }))}
-                isDisabled={!selectedProvince}
+                isDisabled={!selectedProvince === null}
               />
             </div>
             <div>
@@ -391,7 +439,7 @@ function AddressPage(props) {
                   value: idx,
                   label: ward.name,
                 }))}
-                isDisabled={!selectedDistrict}
+                isDisabled={selectedDistrict === null}
               />
             </div>
             <div>
@@ -445,6 +493,8 @@ function AddressPage(props) {
         </div>
         {/* KẾT THÚC BODY CONTAINER */}
       </div>
+      <Modal title="Do you really want to delete??" style={{top:'45%'}} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+      </Modal>
       <Footer></Footer>
     </div>
   );

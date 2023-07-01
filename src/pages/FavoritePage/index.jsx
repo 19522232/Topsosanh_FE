@@ -100,7 +100,7 @@ import { SmileOutlined, FrownOutlined,DeleteOutlined } from "@ant-design/icons";
 //     price: 14990000,
 //     sale: 19,
 //     address: ["Hà Nội", "Thành phố HCM ", "Đà Nẵng", "Hải Phòng"],
-//     logo: phongvu_logo,
+//     logo: phongvu_logo,    
 //     stores: ["thegioididong", "phongvu"],
 //     shop: "phongvu",
 //   },
@@ -282,7 +282,7 @@ function FavoritePage(props) {
   }, [redoadAPI])
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [idRemove, setIdRemove] = useState('');;
+  const [idRemove, setIdRemove] = useState('');
   const showModal = (id) => {
     setIsModalOpen(true);
     setIdRemove(id);
