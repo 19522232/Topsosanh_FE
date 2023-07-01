@@ -1,6 +1,16 @@
 import React, { Fragment, useRef } from "react";
 
-import { Spin, Empty, Pagination, Table, Image, Button,Input, Alert, InputNumber } from "antd";
+import {
+  Spin,
+  Empty,
+  Pagination,
+  Table,
+  Image,
+  Button,
+  Input,
+  Alert,
+  InputNumber,
+} from "antd";
 import Header from "../../components/Header/Header";
 import ProductGrid from "../../components/productGrid/ProductGrid";
 import productService from "../../services/productService";
@@ -12,8 +22,10 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Select from 'react-select';
-import locations from './locations.json';
+import Select from "react-select";
+import locations from "./locations.json";
+import { post } from "../../ultils/AxiosClient";
+import { isDocument } from "@testing-library/user-event/dist/utils";
 
 // const ProductList = [
 //   {
@@ -199,76 +211,97 @@ const Shop = {
   Ankhang: 2,
 };
 const handleRemoveProduct = (id) => {
-    console.log('','éc ô éc')
-}
+  console.log("", "éc ô éc");
+};
 const dataSource = [
-    {
-      key: '1',
-        name: '1',
-      img:<Image src="https://nodejs.org/static/images/logo.svg"></Image>,
-      age: 32,
-        address: '10 Downing Street',
-        action: <Button onClick={() => { handleRemoveProduct(1) }}>Xóa mẹ m đi</Button>
-    },
-    {
-      key: '2',
-      name: 'John',
-      age: 42,
-      address: '10 Downing Street',
-    },
-  ];
-  
-  const columns = [
-    {
-      title: 'STT',
-      dataIndex: 'name',
-          key: 'name',
-          filterMode: 'tree',
-          filterSearch: true,
-    },
-    {
-      title: 'Hình Ảnh',
-      dataIndex: 'img',
-      key: 'img',
-    },
-    {
-      title: 'Tên Sản Phẩm',
-      dataIndex: 'address',
-      key: 'address',
-      },
-      {
-        title: 'Thao Tác',
-        dataIndex: 'action',
-        key: 'action',
-      },
-  ];
+  {
+    key: "1",
+    name: "1",
+    img: <Image src="https://nodejs.org/static/images/logo.svg"></Image>,
+    age: 32,
+    address: "10 Downing Street",
+    action: (
+      <Button
+        onClick={() => {
+          handleRemoveProduct(1);
+        }}
+      >
+        Xóa mẹ m đi
+      </Button>
+    ),
+  },
+  {
+    key: "2",
+    name: "John",
+    age: 42,
+    address: "10 Downing Street",
+  },
+];
+
+const columns = [
+  {
+    title: "STT",
+    dataIndex: "name",
+    key: "name",
+    filterMode: "tree",
+    filterSearch: true,
+  },
+  {
+    title: "Hình Ảnh",
+    dataIndex: "img",
+    key: "img",
+  },
+  {
+    title: "Tên Sản Phẩm",
+    dataIndex: "address",
+    key: "address",
+  },
+  {
+    title: "Thao Tác",
+    dataIndex: "action",
+    key: "action",
+  },
+];
 
 function AddressPage(props) {
-
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
-  const[value,setValue]=useState({province:null,District:null,ward:null,ard:null});
+  const [value, setValue] = useState({
+    province: null,
+    District: null,
+    ward: null,
+    ard: null,
+  });
 
   const provinces = locations.provinces;
   const districts = locations.provinces[selectedProvince]?.districts || [];
-  const wards = locations.provinces[selectedProvince]?.districts[selectedDistrict]?.wards || [];
+  const wards =
+    locations.provinces[selectedProvince]?.districts[selectedDistrict]?.wards ||
+    [];
   console.log(provinces, locations[selectedProvince], selectedProvince);
   useEffect(() => {
     console.log(value);
-  }, [value])
+  }, [value]);
   useEffect(() => {
-    setValue({ ...value, "province": locations.provinces[selectedProvince]?.name||'' });
-  }, [selectedProvince])
+    setValue({
+      ...value,
+      province: locations.provinces[selectedProvince]?.name || "",
+    });
+  }, [selectedProvince]);
   useEffect(() => {
-    if(selectedProvince)
-    setValue({ ...value, "District": locations.provinces[selectedProvince]?.districts[selectedDistrict]?.name||'' });
-  },[selectedDistrict])
+    if (selectedProvince)
+      setValue({
+        ...value,
+        District:
+          locations.provinces[selectedProvince]?.districts[selectedDistrict]
+            ?.name || "",
+      });
+  }, [selectedDistrict]);
   const handleProvinceChange = (selectedOption) => {
     console.log("choice", selectedOption);
     setSelectedProvince(selectedOption.value);
-    
-    
+
     setSelectedDistrict(null);
     setSelectedWard(null);
   };
@@ -282,6 +315,20 @@ function AddressPage(props) {
   const handleWardChange = (selectedOption) => {
     setSelectedWard(selectedOption);
   };
+
+  const handleSubmit = async () => {
+    const res = await post("location/create", {
+      province: provinces[selectedProvince]?.name || "",
+      district: districts[selectedDistrict]?.name || "",
+      commune: selectedWard.label,
+      address: document.getElementById("address")?.value || "",
+      phoneNumber: document.getElementById("address_tel")?.value || "",
+      email: document.getElementById("address_email")?.value || "",
+      name: document.getElementById("address_name")?.value || "",
+    });
+    console.log(res);
+  };
+
   return (
     <div className="search">
       {/* HEADER  */}
@@ -303,61 +350,97 @@ function AddressPage(props) {
                 Trang chủ
               </a>
               <BsChevronRight></BsChevronRight>
-              <span className="search__container__address-keyword">
-           
-              </span>
+              <span className="search__container__address-keyword"></span>
             </div>
-           
           </div>
           <div>
-      <h3>Chọn địa chỉ</h3>
-      <div>
-        <label>Tỉnh/Thành phố:</label>
-        <Select
-          value={locations[selectedProvince]}
-          onChange={handleProvinceChange}
-          options={provinces.map((province,idx) => ({
-            value: idx,
-            label: province.name
-          }))}
-        />
-      </div>
-      <div>
-        <label>Quận/Huyện:</label>
-        <Select
-          value={locations.provinces[selectedProvince]?.districts[setSelectedDistrict]}
-          onChange={handleDistrictChange}
-          options={districts.map((district,idx) => ({
-            value: idx,
-            label: district.name
-          }))}
-          isDisabled={!selectedProvince}
-        />
-      </div>
-      <div>
-        <label>Phường/Xã:</label>
-        <Select
-          value={selectedWard}
-          onChange={handleWardChange}
-          options={wards.map((ward,idx) => ({
-            value: idx,
-            label: ward.name
-          }))}
-          isDisabled={!selectedDistrict}
-        />
+            <h3>Chọn địa chỉ</h3>
+            <div>
+              <label>Tỉnh/Thành phố:</label>
+              <Select
+                value={locations[selectedProvince]}
+                onChange={handleProvinceChange}
+                options={provinces.map((province, idx) => ({
+                  value: idx,
+                  label: province.name,
+                }))}
+              />
             </div>
             <div>
-        <label>Địa chỉ:</label><br/>
+              <label>Quận/Huyện:</label>
+              <Select
+                value={
+                  locations.provinces[selectedProvince]?.districts[
+                    setSelectedDistrict
+                  ]
+                }
+                onChange={handleDistrictChange}
+                options={districts.map((district, idx) => ({
+                  value: idx,
+                  label: district.name,
+                }))}
+                isDisabled={!selectedProvince}
+              />
+            </div>
+            <div>
+              <label>Phường/Xã:</label>
+              <Select
+                value={selectedWard}
+                onChange={handleWardChange}
+                options={wards.map((ward, idx) => ({
+                  value: idx,
+                  label: ward.name,
+                }))}
+                isDisabled={!selectedDistrict}
+              />
+            </div>
+            <div>
+              <label>Địa chỉ:</label>
+              <br />
               <input
                 className="input-aaaa"
-          //value={selectedWard}
-          //onChange={handleWardChange}
-        />
+                id="address"
+                //value={selectedWard}
+                //onChange={handleWardChange}
+              />
             </div>
-            <Button>LƯU</Button>
-    </div>
+            <div>
+              <label>Email:</label>
+              <br />
+              <input
+                className="input-aaaa"
+                type="email"
+                id="address_email"
+                //value={selectedWard}
+                //onChange={handleWardChange}
+              />
+            </div>
+            <div>
+              <label>Số điện thoại:</label>
+              <br />
+              <input
+                className="input-aaaa"
+                type="tel"
+                id="address_tel"
+                //value={selectedWard}
+                //onChange={handleWardChange}
+              />
+            </div>
+            <div>
+              <label>Tên người nhận:</label>
+              <br />
+              <input
+                className="input-aaaa"
+                type="text"
+                id="address_name"
+                //value={selectedWard}
+                //onChange={handleWardChange}
+              />
+            </div>
+            <Button onClick={handleSubmit}>LƯU</Button>
+          </div>
 
-<Table dataSource={dataSource} columns={columns}></Table>
+          <Table dataSource={dataSource} columns={columns}></Table>
           {/* KẾT THÚC PHẦN BẢNG */}
         </div>
         {/* KẾT THÚC BODY CONTAINER */}
