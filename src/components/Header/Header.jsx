@@ -9,7 +9,7 @@ import { AiFillBell } from "react-icons/ai";
 import { Button, Modal, Input, Avatar, Dropdown, Space } from "antd";
 import { UserOutlined, CaretDownOutlined } from "@ant-design/icons";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import notificationService from "../../services/notificationService";
 import trackingService from "../../services/trackingService";
@@ -129,19 +129,23 @@ function Header(props) {
 
   const items = [
     {
-      label: <a href="/tracking">Sản phẩm theo dõi</a>,
+      label: <Link to="/tracking">Sản phẩm theo dõi</Link>,
       key: "0",
     },
     {
-      label: <a href="https://www.aliyun.com">Sản phẩm yêu thích</a>,
+      label: <Link to="/favorite">Sản phẩm yêu thích</Link>,
       key: "1",
+    },
+    {
+      label: <Link to="/address">Địa điểm đặt hàng</Link>,
+      key: "2",
     },
     {
       type: "divider",
     },
     {
       label: <span style={{ color: "red" }}>Đăng xuất</span>,
-      key: "3",
+      key: "4",
       onClick: () => {
         navigate("/login");
       },

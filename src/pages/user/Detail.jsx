@@ -15,7 +15,24 @@ import { Line } from "react-chartjs-2";
 
 import { BsChevronRight } from "react-icons/bs";
 import { AiFillBell } from "react-icons/ai";
-import { Button, Modal, Input, Col, InputNumber, Row, Slider } from "antd";
+import {
+  SmileOutlined,
+  FrownOutlined,
+  DeleteOutlined,
+  HeartOutlined,HeartFilled
+} from "@ant-design/icons";
+import {
+  Button,
+  Modal,
+  Input,
+  Col,
+  InputNumber,
+  Row,
+  Slider,
+  Switch,
+  Select,
+  notification,
+} from "antd";
 
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
@@ -23,6 +40,10 @@ import BuyButton from "../../components/Button/Button";
 
 import "./detail.scss";
 import trackingService from "../../services/trackingService";
+import { get, post } from "../../ultils/AxiosClient";
+import anphat from"../../assets/img/AnPhat_logo.png"
+import ankhang from"../../assets/img/ankhang_logo.png"
+import gear from"../../assets/img/gearvn_logo.png"
 
 ChartJS.register(
   CategoryScale,
@@ -41,7 +62,9 @@ function Detail(props) {
     imageUrl,
     email,
     userName,
-    price
+    price,
+    locationID,
+    autoOrder
   ) {
     this.productName = productName;
     this.productUrl = productUrl;
@@ -49,6 +72,8 @@ function Detail(props) {
     this.email = email;
     this.userName = userName;
     this.price = price;
+    this.locationId = locationID;
+    this.isAutoOrder=autoOrder
   }
 
   const location = useLocation();
@@ -58,6 +83,7 @@ function Detail(props) {
   const [open, setOpen] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [inputValue, setInputValue] = useState(item.price);
+  const [locationID, setLocationID] = useState();
 
   const [max, setMax] = useState(0);
   const [min, setMin] = useState(0);
@@ -72,10 +98,84 @@ function Detail(props) {
 
   const [User_email, setUser_Email] = useState("");
   const [User_name, setUser_Name] = useState("");
-
+  const [autoOrder, setAutoOrder] = useState(true);
+  const [locationData, setLocationData] = useState([]);
+  const [isFavorite, setFavorite] = useState(false);
+  const [price, setPrice] = useState();
   const [productURL, setProductURL] = useState([]);
 
-  const handleOk = () => {
+  const openSuccessNotification = () => {
+    notification.open({
+      message: "Thao tác thực hiện thành công",
+      duration: 10,
+      icon: (
+        <SmileOutlined
+          style={{
+            color: "green",
+          }}
+        />
+      ),
+    });
+  };
+
+  const getFavorite = async () => {
+    const res = await get("Account/GetFavoriteProductByToken");
+    if (res.status == 200) { 
+      res.data.data.filter((i) => {
+        if (i.productUrl === item.url) {
+          setFavorite(true);
+        }
+      })
+    }
+  }
+  
+  const getPrice = async () => {
+    let temp = {}
+    const res = await get(`CrawlData/GetPriceOtherShop`, {
+      productName : item.name,
+      shop: item.shopNum
+    });
+    console.log("1111",res);
+    if (res.status == 200) { 
+      res.data.forEach(i => {
+        temp = {
+          ...temp,
+          [i.shop] : {
+            price: i.price,
+            url: i.url
+          }
+        }
+      })
+    }
+    temp = {
+      ...temp,
+      [item.shopNum]: {
+        price: item.price,
+        url: item.url
+      }
+    }
+    console.log("TMP",temp);
+    setPrice(temp)
+  }
+
+  useEffect(() => {
+    console.log("price" ,price);
+  }, [price])
+
+  useEffect(() => {
+    getFavorite();
+    getPrice();
+  }, [])
+
+  const openErrorNotification = (title) => {
+    notification.open({
+      message: title,
+      duration: 5,
+      icon: <FrownOutlined style={{ color: "red" }} />,
+    });
+  };
+
+  const handleOk = async () => {
     setLoading(true);
     const userInfor = new information(
       item.name,
@@ -83,12 +183,22 @@ function Detail(props) {
       item.img,
       User_email,
       User_name,
-      inputValue
+      inputValue,
+      locationID,
+      autoOrder
     );
 
     console.log(userInfor);
+    const res = await post("ProductTracking/Subscribe", userInfor);
+    if (res.status == 400) {
+      res.data.errors.forEach((error) => {
+        openErrorNotification(error.toString());
+      });
+    } else if (res.status == 200) {
+      openSuccessNotification();
+    }
 
-    trackingService.sendInfo(userInfor);
+    //trackingService.sendInfo(userInfor);
 
     setTimeout(() => {
       setLoading(false);
@@ -111,12 +221,61 @@ function Detail(props) {
     setUser_Name(newName.target.value);
   };
 
-  useEffect(() => {
-    trackingService.getProductURL(item.url).then((res) => {
+  const switchChange = (checked) => {
+    setAutoOrder(checked);
+    console.log(`switch to ${checked}`);
+  };
+
+  const locationSelected = (locationID) => {
+    setLocationID(locationID);
+  };
+
+  const getLocations = async () => {
+    const res = await get("location/getall", {});
+    if (res.status === 200) {
+      const data = res.data.data.map((item, index) => {
+        return {
+          value: item.id,
+          label:
+            item.name +
+            "," +
+            item.phoneNumber +
+            "," +
+            item.address +
+            "," +
+            item.commune +
+            "," +
+            item.district +
+            "," +
+            item.province,
+        };
+      });
+      setLocationData(data);
+    }
+  };
+
+  const getProductURL = async () => {
+    const res = await get(
+      `ProductTracking/TrackingResult?productUrl=${item.url}`,
+      { productUrl: item.url }
+    );
+
+    if (res.status == 200) {
+      console.log(res.data);
       setProductURL(res.data);
       setMax(res.data.prices.max());
       setMin(res.data.prices.min());
-    });
+    }
+  };
+
+  useEffect(() => {
+    // trackingService.getProductURL(item.url).then((res) => {
+    //   setProductURL(res.data);
+    //   setMax(res.data.prices.max());
+    //   setMin(res.data.prices.min());
+    // });
+    getProductURL();
+    getLocations();
   }, []);
 
   useEffect(() => {
@@ -232,6 +391,29 @@ function Detail(props) {
     },
   };
 
+  const handleFavorite = async () => { 
+    if (isFavorite)
+    {
+      const res = await post('Account/RemoveFavorite/', item.url);
+      if (res.status == 200) {
+        setFavorite(false);
+      }
+    }
+    else
+    {
+      const res = await post('Account/AddFavorite', {
+        "productName": item.name,
+        "productUrl": item.url,
+        "imageUrl":  item.img,
+        "shop": item.shopNum
+      });
+      console.log("--->",res);
+      if (res.status == 200) {
+        setFavorite(true);
+      }
+    }
+  }
+
   return (
     <div className="detail">
       <head>
@@ -256,10 +438,15 @@ function Detail(props) {
           <div className="detail__info__wrapper-content">
             <div className="detail__info__image">
               <img src={item.img} alt="" />
-              <span className="detail__info__image-sale"></span>
+              <span className="detail__info__image-sale"></span>  
             </div>
             <div className="detail__info__content">
-              <h1 className="detail__info__content-name">{item.name}</h1>
+              <div className="detail__info__content-title">
+                <h1 className="detail__info__content-name">{item.name}</h1>
+                {!isFavorite ?
+                  <HeartOutlined style={{ marginTop: '-20px'}} onClick={handleFavorite}/> :
+                  <HeartFilled style={{ marginTop: '-20px', color: 'red' }} onClick={handleFavorite}/>}
+              </div>
 
               <div className="detail__info__content-summary">
                 <ul className="detail__info__content-summary-ul">
@@ -276,62 +463,66 @@ function Detail(props) {
                 </ul>
 
                 {/* Bảng so sánh */}
-                {/* <div className="detail__info__content-summary-table">
-                  Bảng so sánh
-                  <table>
-                    <tr>
-                      <td className="col-store">
-                        <img src={anphat_logo} alt="" />
-                        <span> AnPhat</span>
-                      </td>
-                      <td className="col-price">
-                        {new Intl.NumberFormat().format(1200000)}
-                        <u>đ</u>{" "}
-                      </td>
-                      <td>
-                        <a href="">
-                          <BuyButton className="button button-anphat">
-                            Tới nơi bán
-                          </BuyButton>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="col-store">
-                        <img src={gearvn_logo} alt="" />
-                        <span> Gearvn</span>
-                      </td>
-                      <td className="col-price">
-                        {new Intl.NumberFormat().format(2100000)}
-                        <u>đ</u>
-                      </td>
-                      <td>
-                        <a href="">
-                          <BuyButton className="button button-gearvn">
-                            Tới nơi bán
-                          </BuyButton>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="col-store">
-                        <img src={ankhang_logo} alt="" />
-                        <span> An Khang</span>
-                      </td>
-                      <td className="col-price">
-                        {new Intl.NumberFormat().format(1000000)}
-                        <u>đ</u>
-                      </td>
-                      <td>
-                        <a href="">
-                          <BuyButton className="button button-ankhang">
-                            Tới nơi bán
-                          </BuyButton>
-                        </a>
-                      </td>
-                    </tr>
-                  </table>
-                </div> */}
+                {price &&
+                  <div className="detail__info__content-summary-table">
+                    Bảng so sánh
+                    <table>
+                      <tr>
+                        <td className="col-store">
+                          <img src={anphat} alt="" />
+                          <span> AnPhat</span>
+                        </td>
+                        <td className="col-price">
+                          {/* {price[`0`].price ? new Intl.NumberFormat().format(price[`0`].price) : 'error'} */}
+                          {new Intl.NumberFormat().format(price[`0`].price)}
+                          
+                          <u>đ</u>{" "}
+                        </td>
+                        <td>
+                          <a href={price[`0`].url}>
+                            <BuyButton className="button button-anphat">
+                              Tới nơi bán
+                            </BuyButton>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="col-store">
+                          <img src={gear} alt="" />
+                          <span> Gearvn</span>
+                        </td>
+                        <td className="col-price">
+                          {new Intl.NumberFormat().format(price[`1`].price)}
+                          <u>đ</u>
+                        </td>
+                        <td>
+                          <a href={price[`1`].url}>
+                            <BuyButton className="button button-gearvn">
+                              Tới nơi bán
+                            </BuyButton>
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="col-store">
+                          <img src={ankhang} alt="" />
+                          <span> An Khang</span>
+                        </td>
+                        <td className="col-price">
+                          {new Intl.NumberFormat().format(price[`2`].price)}
+                          <u>đ</u>
+                        </td>
+                        <td>
+                          <a href={price[`2`].url}>
+                            <BuyButton className="button button-ankhang">
+                              Tới nơi bán
+                            </BuyButton>
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                }
               </div>
 
               <p className="detail__info__content-price">
@@ -411,9 +602,33 @@ function Detail(props) {
                       />
                     </Col>
                   </Row>
+
+                  <p className="span-dialog" style={{ margin: "15px 0" }}>
+                    <b>Tự động đặt hàng:</b>
+                  </p>
+                  <Row>
+                    <Col>
+                      <Switch defaultChecked onChange={switchChange} />
+                    </Col>
+                  </Row>
+                  {autoOrder && (
+                    <>
+                      <p className="span-dialog" style={{ margin: "15px 0" }}>
+                        <b>Chọn địa chỉ đặt hàng:</b>
+                      </p>
+                      <Row>
+                        <Select
+                          style={{ width: "470px" }}
+                          options={locationData}
+                          placeholder="Chọn địa chỉ"
+                          dropdownMatchSelectWidth={true}
+                          placement="bottomLeft"
+                          onChange={locationSelected}
+                        />
+                      </Row>
+                    </>
+                  )}
                 </Modal>
-                {new Intl.NumberFormat().format(item.price)}
-                <u>đ</u>
               </p>
 
               <p className="detail__info__content-store">

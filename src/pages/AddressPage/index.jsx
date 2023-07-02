@@ -402,7 +402,7 @@ function AddressPage(props) {
               <span className="search__container__address-keyword"></span>
             </div>
           </div>
-          <div>
+          <div style={{width: '80%', margin: 'auto'}}>
             <h3>Chọn địa chỉ</h3>
             <div>
               <label>Tỉnh/Thành phố:</label>
@@ -429,6 +429,7 @@ function AddressPage(props) {
                   label: district.name,
                 }))}
                 isDisabled={!selectedProvince === null}
+                
               />
             </div>
             <div>

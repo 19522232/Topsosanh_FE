@@ -70,10 +70,17 @@
         }
       }
     }
-
+.detail__info__content-title{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+}
     &__content {
       flex: 6;
       margin-left: 50px;
+
+      
 
       &-name {
         font-size: 25px;
