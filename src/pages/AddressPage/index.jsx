@@ -252,7 +252,7 @@ function AddressPage(props) {
     if (res.status === 200) { 
       const data = res.data.data.map((item, index) => {
         return {
-          index: index,
+          index: index + 1,
           address: item.address + "," + item.commune + "," + item.district + "," + item.province,
           action: <Button onClick={() => { showModal(item.id || 1) }} > Xóa</Button>
         }
@@ -373,6 +373,7 @@ function AddressPage(props) {
     }
     else if (res.status == 200) { 
       openSuccessNotification();
+      setReloadAPI(Math.random)
     }
 
   };

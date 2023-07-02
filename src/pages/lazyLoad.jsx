@@ -10,6 +10,6 @@ export const SearchPage = withDynamicImport(() => import("./user/Search"),true)
 
 export const SignUpPage = withDynamicImport(() => import("./user/SignUp"),true)
 
-export const TrackingPage = withDynamicImport(() => import("./user/Tracking"), true)
+export const TrackingPage = withDynamicImport(() => import("./TrackingPage/index"), true)
 
 export const TutorialPage = withDynamicImport(() => import("./user/Tutorial"), true)
