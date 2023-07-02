@@ -16,6 +16,7 @@ function Search_bar(props) {
         pagenumber: 1,
         quantity: 10,
         isAscending: true,
+        searchText: "",
       },
     });
     console.log(keyword);

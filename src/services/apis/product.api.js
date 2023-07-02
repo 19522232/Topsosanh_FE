@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const PRODUCT_API_BASE_URL = "https://localhost:5001/api/CrawlData/Common?";
+const PRODUCT_API_BASE_URL = "http://localhost:5000/api/CrawlData/Common?";
 
 export const getProduct = {
   name: "getProduct",

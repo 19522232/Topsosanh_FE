@@ -288,7 +288,7 @@ function Search(props) {
         name: item.name,
         price: item.newPrice,
         img: item.imageUrl,
-        shop: switchShop(item.shopName),
+        shop: switchShop(item.shop),
         url: item.itemUrl,
       },
     });
@@ -420,7 +420,7 @@ function Search(props) {
                           </a>
                         </td>
                         <td className="itemCell item-shop">
-                          {switchShop(item.shopName)}
+                          {switchShop(item.shop)}
                         </td>
                         <td className="itemCell item-price">
                           {new Intl.NumberFormat().format(item.newPrice)}

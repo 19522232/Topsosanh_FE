@@ -7,7 +7,7 @@ const PRODUCT_API_BASE_URL = "http://localhost:5000/api/CrawlData/Common?";
 class productService {
   getProduct(PageNumber, Quantity, keyword, isAscending) {
     return axios.get(
-      `${PRODUCT_API_BASE_URL}PageNumber=${PageNumber}&Quantity=${Quantity}&Keyword=${keyword}&IsAscending=${isAscending}`,
+      `${PRODUCT_API_BASE_URL}PageNumber=${PageNumber}&Quantity=${Quantity}&Keyword=${keyword}&IsAscending=${isAscending}&searchText=""`,
       {
         headers: {
           Accept:
