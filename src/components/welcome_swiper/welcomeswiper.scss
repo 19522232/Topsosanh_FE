@@ -1,2 +1,22 @@
 .WelcomeSwiper {
+  width: 100%;
+
+  .slider-item {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    line-height: "435px";
+    text-align: center;
+    background-color: red;
+  }
+
+  .slide-1 {
+    height: 100%;
+    width: 100%;
+    background-image: url("https://wallpaperaccess.com/full/1691682.jpg");
+  }
+
+  img {
+    object-fit: fill;
+  }
 }

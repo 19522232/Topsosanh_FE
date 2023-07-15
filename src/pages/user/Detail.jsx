@@ -19,7 +19,8 @@ import {
   SmileOutlined,
   FrownOutlined,
   DeleteOutlined,
-  HeartOutlined,HeartFilled
+  HeartOutlined,
+  HeartFilled,
 } from "@ant-design/icons";
 import {
   Button,
@@ -32,6 +33,7 @@ import {
   Switch,
   Select,
   notification,
+  Spin,
 } from "antd";
 
 import Footer from "../../components/Footer/Footer";
@@ -41,9 +43,9 @@ import BuyButton from "../../components/Button/Button";
 import "./detail.scss";
 import trackingService from "../../services/trackingService";
 import { get, post } from "../../ultils/AxiosClient";
-import anphat from"../../assets/img/AnPhat_logo.png"
-import ankhang from"../../assets/img/ankhang_logo.png"
-import gear from"../../assets/img/gearvn_logo.png"
+import anphat from "../../assets/img/AnPhat_logo.png";
+import ankhang from "../../assets/img/ankhang_logo.png";
+import gear from "../../assets/img/gearvn_logo.png";
 
 ChartJS.register(
   CategoryScale,
@@ -73,7 +75,7 @@ function Detail(props) {
     this.userName = userName;
     this.price = price;
     this.locationId = locationID;
-    this.isAutoOrder=autoOrder
+    this.isAutoOrder = autoOrder;
   }
 
   const location = useLocation();
@@ -120,52 +122,52 @@ function Detail(props) {
 
   const getFavorite = async () => {
     const res = await get("Account/GetFavoriteProductByToken");
-    if (res.status == 200) { 
+    if (res.status == 200) {
       res.data.data.filter((i) => {
         if (i.productUrl === item.url) {
           setFavorite(true);
         }
-      })
+      });
     }
-  }
-  
+  };
+
   const getPrice = async () => {
-    let temp = {}
+    let temp = {};
     const res = await get(`CrawlData/GetPriceOtherShop`, {
-      productName : item.name,
-      shop: item.shopNum
+      productName: item.name,
+      shop: item.shopNum,
     });
-    console.log("1111",res);
-    if (res.status == 200) { 
-      res.data.forEach(i => {
+    console.log("1111", res);
+    if (res.status == 200) {
+      res.data.forEach((i) => {
         temp = {
           ...temp,
-          [i.shop] : {
+          [i.shop]: {
             price: i.price,
-            url: i.url
-          }
-        }
-      })
+            url: i.url,
+          },
+        };
+      });
     }
     temp = {
       ...temp,
       [item.shopNum]: {
         price: item.price,
-        url: item.url
-      }
-    }
-    console.log("TMP",temp);
-    setPrice(temp)
-  }
+        url: item.url,
+      },
+    };
+    console.log("TMP", temp);
+    setPrice(temp);
+  };
 
   useEffect(() => {
-    console.log("price" ,price);
-  }, [price])
+    console.log("price", price);
+  }, [price]);
 
   useEffect(() => {
     getFavorite();
     getPrice();
-  }, [])
+  }, []);
 
   const openErrorNotification = (title) => {
     notification.open({
@@ -391,28 +393,25 @@ function Detail(props) {
     },
   };
 
-  const handleFavorite = async () => { 
-    if (isFavorite)
-    {
-      const res = await post('Account/RemoveFavorite/', item.url);
+  const handleFavorite = async () => {
+    if (isFavorite) {
+      const res = await post("Account/RemoveFavorite/", item.url);
       if (res.status == 200) {
         setFavorite(false);
       }
-    }
-    else
-    {
-      const res = await post('Account/AddFavorite', {
-        "productName": item.name,
-        "productUrl": item.url,
-        "imageUrl":  item.img,
-        "shop": item.shopNum
+    } else {
+      const res = await post("Account/AddFavorite", {
+        productName: item.name,
+        productUrl: item.url,
+        imageUrl: item.img,
+        shop: item.shopNum,
       });
-      console.log("--->",res);
+      console.log("--->", res);
       if (res.status == 200) {
         setFavorite(true);
       }
     }
-  }
+  };
 
   return (
     <div className="detail">
@@ -438,14 +437,22 @@ function Detail(props) {
           <div className="detail__info__wrapper-content">
             <div className="detail__info__image">
               <img src={item.img} alt="" />
-              <span className="detail__info__image-sale"></span>  
+              <span className="detail__info__image-sale"></span>
             </div>
             <div className="detail__info__content">
               <div className="detail__info__content-title">
                 <h1 className="detail__info__content-name">{item.name}</h1>
-                {!isFavorite ?
-                  <HeartOutlined style={{ marginTop: '-20px'}} onClick={handleFavorite}/> :
-                  <HeartFilled style={{ marginTop: '-20px', color: 'red' }} onClick={handleFavorite}/>}
+                {!isFavorite ? (
+                  <HeartOutlined
+                    style={{ marginTop: "-20px" }}
+                    onClick={handleFavorite}
+                  />
+                ) : (
+                  <HeartFilled
+                    style={{ marginTop: "-20px", color: "red" }}
+                    onClick={handleFavorite}
+                  />
+                )}
               </div>
 
               <div className="detail__info__content-summary">
@@ -463,7 +470,7 @@ function Detail(props) {
                 </ul>
 
                 {/* Bảng so sánh */}
-                {price &&
+                {price ? (
                   <div className="detail__info__content-summary-table">
                     Bảng so sánh
                     <table>
@@ -474,9 +481,11 @@ function Detail(props) {
                         </td>
                         <td className="col-price">
                           {/* {price[`0`].price ? new Intl.NumberFormat().format(price[`0`].price) : 'error'} */}
-                          {new Intl.NumberFormat().format(price[`0`].price)}
-                          
-                          <u>đ</u>{" "}
+                          {price[`0`].price == "0" ||
+                          price[`0`].price > 1000000000
+                            ? "Không tìm thấy"
+                            : new Intl.NumberFormat().format(price[`0`].price) +
+                              "đ"}
                         </td>
                         <td>
                           <a href={price[`0`].url}>
@@ -492,8 +501,11 @@ function Detail(props) {
                           <span> Gearvn</span>
                         </td>
                         <td className="col-price">
-                          {new Intl.NumberFormat().format(price[`1`].price)}
-                          <u>đ</u>
+                          {price[`1`].price == "0" ||
+                          price[`1`].price > 1000000000
+                            ? "Không tìm thấy"
+                            : new Intl.NumberFormat().format(price[`1`].price) +
+                              "đ"}
                         </td>
                         <td>
                           <a href={price[`1`].url}>
@@ -509,8 +521,11 @@ function Detail(props) {
                           <span> An Khang</span>
                         </td>
                         <td className="col-price">
-                          {new Intl.NumberFormat().format(price[`2`].price)}
-                          <u>đ</u>
+                          {price[`2`].price == "0" ||
+                          price[`2`].price > 1000000000
+                            ? "Không tìm thấy"
+                            : new Intl.NumberFormat().format(price[`2`].price) +
+                              "đ"}
                         </td>
                         <td>
                           <a href={price[`2`].url}>
@@ -522,7 +537,16 @@ function Detail(props) {
                       </tr>
                     </table>
                   </div>
-                }
+                ) : (
+                  <div style={{ display: "flex" }}>
+                    <Spin
+                      spinning={price}
+                      size="small"
+                      tip="Loading"
+                      style={{ justifyContent: "center" }}
+                    ></Spin>
+                  </div>
+                )}
               </div>
 
               <p className="detail__info__content-price">

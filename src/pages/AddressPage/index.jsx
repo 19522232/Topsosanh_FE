@@ -1,5 +1,9 @@
 import React, { Fragment, useRef } from "react";
-import { SmileOutlined, FrownOutlined,DeleteOutlined } from "@ant-design/icons";
+import {
+  SmileOutlined,
+  FrownOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
 import {
   Spin,
@@ -238,50 +242,67 @@ function AddressPage(props) {
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedWard, setSelectedWard] = useState(null);
-  const [reloadAPI, setReloadAPI]=useState();
-  const [dataSource, setDataSource]=useState();
+  const [reloadAPI, setReloadAPI] = useState();
+  const [dataSource, setDataSource] = useState();
 
   const provinces = locations.provinces;
   const districts = locations.provinces[selectedProvince]?.districts || [];
   const wards =
     locations.provinces[selectedProvince]?.districts[selectedDistrict]?.wards ||
     [];
-  
-  const getData = async () => { 
-    const res = await get("location/getall", { PageNumber: 99999999999999999999999999 });
-    if (res.status === 200) { 
+
+  const getData = async () => {
+    const res = await get("location/getall", {
+      PageNumber: 99999999999999999999999999,
+    });
+    if (res.status === 200) {
       const data = res.data.data.map((item, index) => {
         return {
           index: index + 1,
-          address: item.address + "," + item.commune + "," + item.district + "," + item.province,
-          action: <Button onClick={() => { showModal(item.id || 1) }} > Xóa</Button>
-        }
-      })
+          address:
+            item.address +
+            "," +
+            item.commune +
+            "," +
+            item.district +
+            "," +
+            item.province,
+          action: (
+            <Button
+              onClick={() => {
+                showModal(item.id || 1);
+              }}
+            >
+              {" "}
+              Xóa
+            </Button>
+          ),
+        };
+      });
       console.log("data ", data);
-      setDataSource(data)
+      setDataSource(data);
     }
-  }
-  
+  };
+
   useEffect(() => {
-    getData()
-  }, [reloadAPI])
-  
+    getData();
+  }, [reloadAPI]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [idRemove, setIdRemove] = useState('');
+  const [idRemove, setIdRemove] = useState("");
 
   const handleRemoveProduct = async () => {
     const res = await _delete("location/delete/" + idRemove);
     if (res.status == 400) {
-      res.data.errors.forEach(error => {
-        openErrorNotification(error.toString())
+      res.data.errors.forEach((error) => {
+        openErrorNotification(error.toString());
       });
-    }
-    else if (res.status == 200) { 
+    } else if (res.status == 200) {
       openSuccessNotification();
-      setReloadAPI(Math.random)
+      setReloadAPI(Math.random);
     }
   };
-  
+
   const columns = [
     {
       title: "STT",
@@ -355,7 +376,7 @@ function AddressPage(props) {
   };
 
   const handleSubmit = async () => {
-    const value={
+    const value = {
       province: provinces[selectedProvince]?.name || "",
       district: districts[selectedDistrict]?.name || "",
       commune: selectedWard.label,
@@ -363,19 +384,17 @@ function AddressPage(props) {
       phoneNumber: document.getElementById("address_tel")?.value || "",
       email: document.getElementById("address_email")?.value || "",
       name: document.getElementById("address_name")?.value || "",
-    }
-    
+    };
+
     const res = await post("location/create", value);
     if (res.status == 400) {
-      res.data.errors.forEach(error => {
-        openErrorNotification(error.toString())
+      res.data.errors.forEach((error) => {
+        openErrorNotification(error.toString());
       });
-    }
-    else if (res.status == 200) { 
+    } else if (res.status == 200) {
       openSuccessNotification();
-      setReloadAPI(Math.random)
+      setReloadAPI(Math.random);
     }
-
   };
 
   return (
@@ -399,10 +418,12 @@ function AddressPage(props) {
                 Trang chủ
               </a>
               <BsChevronRight></BsChevronRight>
-              <span className="search__container__address-keyword"></span>
+              <span className="search__container__address-keyword">
+                Địa chỉ
+              </span>
             </div>
           </div>
-          <div style={{width: '80%', margin: 'auto'}}>
+          <div style={{ width: "50%" }}>
             <h3>Chọn địa chỉ</h3>
             <div>
               <label>Tỉnh/Thành phố:</label>
@@ -429,7 +450,6 @@ function AddressPage(props) {
                   label: district.name,
                 }))}
                 isDisabled={!selectedProvince === null}
-                
               />
             </div>
             <div>
@@ -495,8 +515,13 @@ function AddressPage(props) {
         </div>
         {/* KẾT THÚC BODY CONTAINER */}
       </div>
-      <Modal title="Do you really want to delete??" style={{top:'45%'}} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-      </Modal>
+      <Modal
+        title="Do you really want to delete??"
+        style={{ top: "45%" }}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      ></Modal>
       <Footer></Footer>
     </div>
   );
