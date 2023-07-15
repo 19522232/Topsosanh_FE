@@ -33,16 +33,15 @@ function LoginForm() {
 
   const onFinish = async (values) => {
     console.log(values);
-    const res = await post('Auth/Login', values)
+    const res = await post("Auth/Login", values);
 
-    console.log('--->', res);
-    if (res.status == 400) { 
-      openNotificationWithIcon(res.data.errors.toString())
+    console.log("--->", res);
+    if (res.status == 400) {
+      openNotificationWithIcon(res.data.errors.toString());
       return;
     }
     const token = res.data.token.access_token;
     localStorage.setItem("token", token);
-    
     navigate("/");
     // try {
     //   const res = await loginAccount(values);
@@ -117,7 +116,6 @@ function LoginForm() {
             type="primary"
             htmlType="submit"
             className="login-form-button font-face-qsb"
-            
           >
             Log in
           </Button>

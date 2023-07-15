@@ -1,5 +1,7 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // import Home from "./pages/user/Home";
 // import Login from "./pages/user/Login";
@@ -25,8 +27,8 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignUpPage />}></Route>
         <Route path="/search/:keyword" element={<SearchPage />}></Route>
         <Route path="/detail/" element={<DetailPage />}>

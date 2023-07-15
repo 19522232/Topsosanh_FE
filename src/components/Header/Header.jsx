@@ -147,6 +147,12 @@ function Header(props) {
       label: <span style={{ color: "red" }}>Đăng xuất</span>,
       key: "4",
       onClick: () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("position_amount");
+        localStorage.removeItem("isAdmin");
+        localStorage.removeItem("userId");
         navigate("/login");
       },
     },
